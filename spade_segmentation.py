@@ -85,6 +85,8 @@ def spade_segmentation(clipped_signal, resampled_data, Ls, win_len, win_shift, m
     'Ml': np.zeros(win_len).astype(bool)
   }
 
+  tot_cycles = 0
+
   # Main loop
   for n in tqdm(range(N), desc="Processing", unit="iteration"):
     # multiplying signal block with windows and choosing corresponding masks
@@ -110,6 +112,8 @@ def spade_segmentation(clipped_signal, resampled_data, Ls, win_len, win_shift, m
     data_rec_block = np.fft.ifftshift(data_rec_block)
     data_rec_fin[idx] = data_rec_fin[idx] + data_rec_block * gsyn
 
+    tot_cycles += cycles
+
   data_rec_fin = data_rec_fin[:Ls]
 
-  return data_rec_fin, cycles
+  return data_rec_fin, tot_cycles

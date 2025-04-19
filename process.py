@@ -14,7 +14,11 @@ import argparse
 import pandas as pd
 import librosa
 from pesq import pesq
-import openpyxl
+
+F_red = 1  # redundancy
+s = 1    #  stepsize 
+r = 2    #  steprate
+epsilon = 0.1  # epsilon
 
 # Helper function to ensure directories exist
 def ensure_dir(directory):
@@ -87,11 +91,7 @@ def recon(audio_dir, output_path, time_clip, target_fs_values, clipping_threshol
                     # win_len = 4096
                     # win_shift = int(np.floor(win_len/4))   # window shift
                     #win_type = 'hann'
-                    F_red = 2  # redundancy
-
-                    s = 1    #  stepsize 
-                    r = 2    #  steprate
-                    epsilon = 0.1  # epsilon
+                    
                     maxit = np.ceil(np.floor(win_len * F_red / 2 + 1) * r / s)          # max iterations
 
                     print("Generating clipped signal \n")
@@ -110,10 +110,14 @@ def recon(audio_dir, output_path, time_clip, target_fs_values, clipping_threshol
 
                     clipped_signal,_,_,_,_ = clip_sdr_modified(data, clipping_threshold)
 
+                    clipped_signal = clipped_signal / max(np.abs(clipped_signal))         # normalization
+                    reconstructed_signal = reconstructed_signal / max(np.abs(reconstructed_signal))         # normalization
+
+
                     sdr_clip = sdr(data, clipped_signal)
                     sdr_rec = sdr(data, reconstructed_signal)
                     sdr_imp = sdr_rec - sdr_clip
-                    pesq_val  = pesq(fs, data, reconstructed_signal, 'wb')
+                    pesq_val  = pesq(fs, data, clipped_signal, 'wb')
                     pesq_imp = pesq(fs, data, reconstructed_signal, 'wb') - pesq(fs, data, clipped_signal, 'wb') 
 
                     # Store metrics
