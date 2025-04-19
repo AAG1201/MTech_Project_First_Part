@@ -8,5 +8,5 @@ __pycache__/
 *.pyc
 .env
 .DS_Store
-/data/AAG/MTech_Project_First_Part/custom_sound_variation/
-/data/AAG/MTech_Project_First_Part/output_log.txt
+custom_sound_variation/
+output_log.txt
